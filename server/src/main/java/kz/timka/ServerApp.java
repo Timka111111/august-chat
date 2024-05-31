@@ -21,11 +21,18 @@ public class ServerApp {
             System.out.println("Клиент подключился");
 
             String msg;
+            int messageCount = 0;
+
             while (true) {
                 msg = in.readUTF();
-                System.out.print(msg + "\n");
-                out.writeUTF("ECHO: " + msg);
-            }
+                messageCount++;
+                if (msg.equalsIgnoreCase("/stat")) {
+                    out.writeUTF("Количество сообщений - " + (messageCount - 1));
+                } else {
+                    System.out.print(msg + "\n");
+                    out.writeUTF("ECHO: " + msg);
+                }
+                }
         } catch (IOException e){
             e.printStackTrace();
         }

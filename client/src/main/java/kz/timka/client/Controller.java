@@ -36,14 +36,14 @@ public class Controller implements Initializable{
                         String msg = in.readUTF();
                         msgArea.appendText(msg + "\n");
                     }
-                }catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
+                    closeConnection();
                 }
             }).start();
-
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("Unable to connect to server");
+            showErrorAlert("Unable to connect to server");
         }
     }
 
@@ -54,6 +54,27 @@ public class Controller implements Initializable{
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение");
             alert.showAndWait();
+        }
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
+    }
+
+    private void closeConnection() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
