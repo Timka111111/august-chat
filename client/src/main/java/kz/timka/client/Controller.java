@@ -115,7 +115,7 @@ public class Controller implements Initializable{
 
         }
         try {
-            out.writeUTF("/login " + loginField.getText());
+            out.writeUTF("/login " + loginField.getText() + " " + passwordField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }

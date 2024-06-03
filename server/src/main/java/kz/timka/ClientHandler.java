@@ -24,12 +24,26 @@ public class ClientHandler {
                 while (true) {
                     String msg = in.readUTF();
                     if(msg.startsWith("/login ")) {
-                        String usernameFromClient = msg.split("\\s+")[1];
-                        if(server.isUserOnline(usernameFromClient)) {
+                        // /login Bob@gmail.com 111
+                        String[] tokens = msg.split("\\s+");
+                        if(tokens.length != 3) {
+                            sendMessage("Server: Incorrect command");
+                            continue;
+                        }
+                        String login = tokens[1];
+                        String password = tokens[2];
+                        String nick = server.getAuthenticationProvider()
+                                .getUsernameByLoginAndPassword(login, password);
+                        if(nick == null) {
+                            sendMessage("/login_failed Incorrect login/password");
+                            continue;
+                        }
+
+                        if(server.isUserOnline(nick)) {
                             sendMessage("/login_failed this username is already in use");
                             continue;
                         }
-                        username = usernameFromClient;
+                        username = nick;
                         sendMessage("/login_ok " + username);
                         server.subscribe(this);
                         break;

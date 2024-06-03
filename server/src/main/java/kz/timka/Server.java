@@ -9,9 +9,11 @@ import java.util.List;
 public class Server {
     private int port;
     private List<ClientHandler> list;
+    private AuthenticationProvider authenticationProvider;
     public Server(int port) {
         this.port = port;
         this.list = new ArrayList<>();
+        this.authenticationProvider = new InMemoryAuthProvider();
         try(ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Сервер запущен на порту 8189. Ожидаем подключение клиента...");
             while (true) {
@@ -71,5 +73,9 @@ public class Server {
         for(ClientHandler c : list) {
             c.sendMessage(clientList);
         }
+    }
+
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
     }
 }
