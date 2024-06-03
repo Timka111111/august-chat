@@ -1,6 +1,7 @@
 package kz.timka.client;
 
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,6 +18,8 @@ public class Controller implements Initializable{
 
     @FXML
     private TextField msgField, loginField;
+    @FXML
+    private PasswordField passwordField;
 
     @FXML
     private TextArea msgArea;
@@ -30,7 +33,7 @@ public class Controller implements Initializable{
     private DataInputStream in;
     private DataOutputStream out;
     private String username;
-
+// login: Bob@gmail.com password: 111 username: Bob
     public void setUsername(String username) {
         this.username = username;
         if(this.username == null) {
@@ -75,6 +78,16 @@ public class Controller implements Initializable{
                     // цикл общения
                     while (true) {
                         String msg = in.readUTF();
+                        if(msg.startsWith("/clients_list ")) {
+                            Platform.runLater(() -> {
+                                clientsList.getItems().clear();
+                                String[] tokens = msg.split("\\s+");
+                                for (int i = 1; i < tokens.length; i++) {
+                                    clientsList.getItems().add(tokens[i]);
+                                }
+                            });
+                            continue;
+                        }
                         msgArea.appendText(msg + "\n");
                     }
                 }catch (IOException e){

@@ -63,8 +63,12 @@ public class ClientHandler {
 
     }
 
-    public void sendMessage(String msg) throws IOException {
-        out.writeUTF(msg);
+    public void sendMessage(String msg) {
+        try {
+            out.writeUTF(msg);
+        }catch (IOException e) {
+            disconnect();
+        }
     }
 
     public void disconnect() {
