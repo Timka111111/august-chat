@@ -24,14 +24,24 @@ public class ClientHandler {
                 while (true) {
                     String msg = in.readUTF();
                     if(msg.startsWith("/login ")) {
-                        username = msg.split("\\s+")[1];
-                        // /who_am_i
+                        String usernameFromClient = msg.split("\\s+")[1];
+                        if(server.isUserOnline(usernameFromClient)) {
+                            sendMessage("/login_failed this username is already in use");
+                            continue;
+                        }
+                        username = usernameFromClient;
                         sendMessage("/login_ok " + username);
+                        server.subscribe(this);
                         break;
                     }
                 }
                 while (true) {
                     String msg = in.readUTF();
+                    // /p Bob Hello
+                    if(msg.startsWith("/")) {
+                        executeCmd(msg);
+                        continue;
+                    }
                     server.broadcastMessage(username + ": " + msg);
                 }
             } catch (IOException e) {
@@ -40,6 +50,16 @@ public class ClientHandler {
                 disconnect();
             }
         }).start();
+
+    }
+
+
+    public void executeCmd(String msg) throws IOException {
+        if(msg.startsWith("/p ")) {
+            String[] tokens = msg.split("\\s+", 3);
+            server.sendPrivateMsg(this, tokens[1], tokens[2]);
+            return;
+        }
 
     }
 
@@ -56,5 +76,9 @@ public class ClientHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

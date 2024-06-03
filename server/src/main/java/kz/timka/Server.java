@@ -16,7 +16,7 @@ public class Server {
             System.out.println("Сервер запущен на порту 8189. Ожидаем подключение клиента...");
             while (true) {
                 Socket socket = serverSocket.accept();
-                subscribe(new ClientHandler(this, socket));
+                new ClientHandler(this, socket);
             }
 
         } catch (IOException e){
@@ -36,5 +36,25 @@ public class Server {
 
     public void unsubscribe(ClientHandler clientHandler) {
         list.remove(clientHandler);
+    }
+
+    public boolean isUserOnline(String username) {
+        for(ClientHandler clientHandler : list) {
+            if(clientHandler.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void sendPrivateMsg(ClientHandler sender, String receiver, String msg) throws IOException{
+        for(ClientHandler c : list) {
+            if(c.getUsername().equals(receiver)) {
+                c.sendMessage("From: " + sender.getUsername() + " Message: " + msg);
+                sender.sendMessage("Receiver: " + receiver + " Message: " + msg);
+                return;
+            }
+        }
+        sender.sendMessage("Unable to send message to " + receiver);
     }
 }
